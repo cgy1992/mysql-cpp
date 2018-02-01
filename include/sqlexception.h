@@ -5,7 +5,7 @@
 #ifndef MYSQL_CPP_SQLEXCEPTION_H
 #define MYSQL_CPP_SQLEXCEPTION_H
 
-#include <bits/exception.h>
+#include <exception>
 #include <string>
 
 using std::string;
