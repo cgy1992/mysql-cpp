@@ -22,7 +22,7 @@ public:
 
     Connection *
     connect(const string &host, const string &user, const string &password, const string &db, unsigned int port,
-            const char *unix_socket, unsigned long flag);
+            const string &unix_socket, unsigned long flag);
 
 private:
 

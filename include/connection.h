@@ -15,8 +15,14 @@ using std::string;
 class Connection
 {
 public:
-    explicit Connection(MYSQL *_mysql) : mysql(_mysql)
-    {};
+    Connection(MYSQL *_mysql,
+               const string &_host,
+               const string &_user,
+               const string &_password,
+               const string &_db,
+               unsigned int _port,
+               const string &_unix_socket,
+               unsigned long _flag);
 
     ~Connection()
     {
@@ -27,8 +33,18 @@ public:
 
     Statement *prepareStatement(const string &sql);
 
+    bool connect();
+
 private:
+
     MYSQL *mysql;
+    string host;
+    string user;
+    string password;
+    string db;
+    unsigned int port;
+    string unix_socket;
+    unsigned long flag;
 };
 
 #endif //MYSQL_CPP_CONNECTION_H
