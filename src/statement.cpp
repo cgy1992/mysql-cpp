@@ -3,9 +3,12 @@
 //
 
 #include <cstring>
-#include "statement.h"
+#include "cppmysql/statement.h"
+#include "statement_wrap.h"
 
-ResultSet *Statement::execute()
+using std::make_shared;
+
+shared_ptr<ResultSet> Statement::execute()
 {
     if (this->sql.empty())
     {
@@ -14,30 +17,30 @@ ResultSet *Statement::execute()
 
     if (param_count)
     {
-        mysql_stmt_bind_param(this->stmt, this->inBind.get());
+        this->wrap->bind_param(this->inBind.get());
     }
 
-    if (mysql_stmt_execute(this->stmt))
+    if (this->wrap->execute())
     {
-        throw SQLException(mysql_stmt_error(this->stmt));
+        throw SQLException(this->wrap->error());
     }
 
-    this->affected_rows = mysql_stmt_affected_rows(this->stmt);
+    this->affected_rows = this->wrap->affected_rows();
 
-    this->result_meta = mysql_stmt_result_metadata(this->stmt);
+    this->result_meta = this->wrap->result_metadata();
 
     if (this->result_meta)
     {
-        mysql_stmt_store_result(stmt);
+        this->wrap->store_result();
 
-        auto resultSet = new ResultSet(this->stmt);
+        auto resultSet = make_shared<ResultSet>(this->wrap);
         return resultSet;
     }
 
     return nullptr;
 }
 
-ResultSet *Statement::execute(const string &sql)
+shared_ptr<ResultSet> Statement::execute(const string &sql)
 {
     this->sql = sql;
 
@@ -66,12 +69,12 @@ void Statement::setParam(int index, int val)
 
 bool Statement::prepare()
 {
-    if (mysql_stmt_prepare(this->stmt, this->sql.c_str(), this->sql.length()))
+    if (this->wrap->prepare(this->sql))
     {
-        throw SQLException(mysql_stmt_error(this->stmt));
+        throw SQLException(this->wrap->error());
     }
 
-    param_count = mysql_stmt_param_count(this->stmt);
+    param_count = this->wrap->param_count();
     if (param_count)
     {
         this->inBind = std::unique_ptr<MYSQL_BIND[]>(new MYSQL_BIND[param_count]());

@@ -18,9 +18,9 @@ class Driver
 public:
     static Driver *get_instance();
 
-    Connection *connect(const string &host, const string &user, const string &password, const string &db);
+    shared_ptr<Connection> connect(const string &host, const string &user, const string &password, const string &db);
 
-    Connection *
+    shared_ptr<Connection>
     connect(const string &host, const string &user, const string &password, const string &db, unsigned int port,
             const string &unix_socket, unsigned long flag);
 

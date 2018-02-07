@@ -16,30 +16,25 @@
 
 using std::string;
 using std::move;
+using std::shared_ptr;
 
-#include <iostream>
-
+class StatementWrap;
 
 class Statement
 {
 public:
-    explicit Statement(MYSQL_STMT *_stmt) : stmt(_stmt)
+    explicit Statement(shared_ptr<StatementWrap> _wrap) : wrap(std::move(_wrap))
     {}
 
-    Statement(MYSQL_STMT *_stmt, string _sql) : stmt(_stmt), sql(move(_sql))
+    Statement(shared_ptr<StatementWrap> _wrap, string _sql) : wrap(std::move(_wrap)), sql(std::move(_sql))
     {}
 
-    ~Statement()
-    {
-        mysql_stmt_close(this->stmt);
-        mysql_free_result(this->result_meta);
-    }
 
     bool prepare();
 
-    ResultSet *execute();
+    shared_ptr<ResultSet> execute();
 
-    ResultSet *execute(const string &sql);
+    shared_ptr<ResultSet> execute(const string &sql);
 
     void setParam(int index, int val);
 
@@ -73,12 +68,13 @@ public:
     unsigned long param_count = 0;
 
 private:
-    MYSQL_STMT *stmt;
-    MYSQL_RES *result_meta = nullptr;
-    string sql;
-    my_ulonglong affected_rows;
+    shared_ptr<StatementWrap> wrap;
 
-    std::unique_ptr<MYSQL_BIND[]> inBind;
+    shared_ptr<MYSQL_RES> result_meta{};
+    string sql;
+    my_ulonglong affected_rows{};
+
+    std::unique_ptr<MYSQL_BIND[]> inBind{};
 };
 
 

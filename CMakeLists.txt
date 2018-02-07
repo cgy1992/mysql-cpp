@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.0)
 project(mysql_cpp)
 
 set(CMAKE_CXX_STANDARD 11)
-include_directories(include)
+include_directories(
+        include
+        src/include)
 
 aux_source_directory(src SRC)
 

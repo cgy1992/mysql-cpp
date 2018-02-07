@@ -19,9 +19,8 @@ int main()
     auto con = driver->connect("127.0.0.1", "root", "root", "test");
     try
     {
-        // use shared_ptr or other smart pointer, otherwise you need call delete manually
-        auto stmt = shared_ptr<Statement>(con->prepareStatement("select col1, col2 from table;"));
-        auto result = shared_ptr<ResultSet>(stmt->execute());
+        auto stmt = con->prepareStatement("select col1, col2 from table;");
+        auto result = stmt->execute();
         while (result->next())
         {
             auto col1 = result->getInt(0);
@@ -30,7 +29,7 @@ int main()
             cout << col1 << col2 << endl;
         }
         
-        auto stmt2 = shared_ptr<Statement>(con->prepareStatement("select col1 from table where col2=? and col3=?;"));
+        auto stmt2 = con->prepareStatement("select col1 from table where col2=? and col3=?;");
         stmt2->setParam(0, 1);
         stmt2->setParam(1, "param2");
         
@@ -39,7 +38,7 @@ int main()
          * stmt2->setParams(100, "param2");
          */
          
-        auto result2 = shared_ptr<ResultSet>(stmt2->execute());
+        auto result2 = stmt2->execute();
         // fetch result...
         
     } catch (SQLException &e)
@@ -51,4 +50,4 @@ int main()
 ```
 
 # Notice
-`Driver::get_instance()` is not thread safe, use mutex or whatever you like in multi-thread.
+`Driver::connect` is not thread safe, use mutex or whatever you like in multi-thread.
