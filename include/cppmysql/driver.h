@@ -12,15 +12,16 @@
 #include "sqlexception.h"
 
 using std::string;
+using std::unique_ptr;
 
 class Driver
 {
 public:
     static Driver *get_instance();
 
-    shared_ptr<Connection> connect(const string &host, const string &user, const string &password, const string &db);
+    unique_ptr<Connection> connect(const string &host, const string &user, const string &password, const string &db);
 
-    shared_ptr<Connection>
+    unique_ptr<Connection>
     connect(const string &host, const string &user, const string &password, const string &db, unsigned int port,
             const string &unix_socket, unsigned long flag);
 

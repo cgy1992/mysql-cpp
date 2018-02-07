@@ -13,12 +13,12 @@ Driver *Driver::get_instance()
     return new Driver();
 }
 
-shared_ptr<Connection> Driver::connect(const string &host, const string &user, const string &password, const string &db)
+unique_ptr<Connection> Driver::connect(const string &host, const string &user, const string &password, const string &db)
 {
     return connect(host, user, password, db, 0, "", 0);
 }
 
-shared_ptr<Connection>
+unique_ptr<Connection>
 Driver::connect(const string &host, const string &user, const string &password, const string &db, unsigned int port,
                 const string &unix_socket,
                 unsigned long flag)
@@ -32,7 +32,7 @@ Driver::connect(const string &host, const string &user, const string &password, 
         auto r = wrap->connect(host, user, password, db, port, unix_socket, flag);
         if (r)
         {
-            return make_shared<Connection>(wrap);
+            return unique_ptr<Connection>(new Connection(wrap));
         } else throw SQLException(wrap->error());
     }
 }
