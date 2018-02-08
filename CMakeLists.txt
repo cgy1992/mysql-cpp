@@ -10,3 +10,5 @@ aux_source_directory(src SRC)
 
 add_library(mysql_cpp STATIC
         ${SRC})
+
+target_include_directories(mysql_cpp PUBLIC include)
